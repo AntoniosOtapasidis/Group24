@@ -10,6 +10,13 @@ editor: visual
 
 ## s233079
 
+my name is Georgios Retsinias
+
+```{r}
+x <-1+1
+x
+```
+
 ## s204116
 
 ## s183451
