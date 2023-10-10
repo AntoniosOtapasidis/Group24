@@ -6,3 +6,7 @@ editor: visual
 ---
 
 # PCA tidyverse style
+
+```{r}
+library(tidyverse)
+```
