@@ -8,6 +8,11 @@ editor: visual
 
 ## s232994
 
+```{r}
+clown = "Antony is a clown"
+clown
+```
+
 ## s233079
 
 ## s204116
