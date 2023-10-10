@@ -8,6 +8,8 @@ editor: visual
 
 ## s232994
 
+Konstantinos
+
 ```{r}
 clown = "Antony is a clown"
 clown
