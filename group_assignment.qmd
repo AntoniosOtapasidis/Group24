@@ -1,18 +1,26 @@
 ---
 title: "Group Assignment"
 author: "Group 24"
-format: html
+format:
+  html:
+    embed-resources: true
 editor: visual
 ---
 
 # PCA tidyverse style
 
-```{r}
+```{r setup, include=TRUE, message=FALSE, warning=FALSE}
+# Load the libraries
+library(tidyverse)
+library(dplyr)
 library(ggplot2)
+library(broom)
+library(ggrepel)
+library(purrr)
 ```
 
 ```{r}
-library(tidyverse)
+
 ```
 
 ```{r}
