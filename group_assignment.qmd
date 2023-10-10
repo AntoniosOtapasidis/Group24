@@ -38,3 +38,14 @@ if( !file.exists(str_c(raw_dir, data_file)) ){
 }
 load(file = str_c(raw_dir, data_file))
 ```
+
+Data Wrangeling
+```{r}
+gravier <- gravier |>
+  bind_cols() |>
+  as_tibble() |> 
+  mutate(y = case_when(y == "poor" ~ 1,
+                       y == "good" ~ 0)) |> 
+  relocate(early_metastasis = y)
+
+```
