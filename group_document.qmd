@@ -4,13 +4,15 @@ format: html
 editor: visual
 ---
 
+## *New feature*
+
 ## S232996
 
 ## s232994
 
 ## s233079
 
-my name is Georgios Retsinias
+my name is Georgios Retsinias, what are your names?
 
 ```{r}
 x <-1+1
