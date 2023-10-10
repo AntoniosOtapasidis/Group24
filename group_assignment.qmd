@@ -49,3 +49,24 @@ gravier <- gravier |>
   relocate(early_metastasis = y)
 
 ```
+
+Plot average expressions
+```{r}
+gravier |>
+  select(-early_metastasis) |>
+  summarise(across(everything(), mean, na.rm = TRUE)) |>
+  pivot_longer(cols = everything(),
+               names_to = "gene",
+               values_to = "average_expression") |> 
+  arrange(-average_expression) |>
+  ggplot(aes(x = reorder(gene, average_expression), 
+             y = average_expression)) + 
+  geom_col() +
+  labs(
+    title = "Distribution of Average log2 Expression of Genes",
+    x = "Genes",
+    y = "Average log2 Expression"
+  ) +
+  theme_minimal()+
+  theme(axis.text.x = element_blank())
+```
