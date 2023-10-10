@@ -15,6 +15,13 @@ clown = "Antony is a clown"
 clown
 ```
 
+#### New feature
+
+```{r}
+a = 1+2
+a
+```
+
 ## s233079
 
 my name is Georgios Retsinias
