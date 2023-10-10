@@ -9,4 +9,8 @@ Top 10 Data Science Languages of ALL Time:
 4. has
 3. different
 2. tastes
+<<<<<<< HEAD
 1. RRRRRR
+=======
+R si superious
+>>>>>>> 9dc0ede8dac31a6cd197858f3752f329f0ee453c
