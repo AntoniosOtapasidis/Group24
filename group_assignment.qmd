@@ -90,8 +90,10 @@ pca_fit <- gravier |>
 ```{r}
 pca_fit |> 
   augment(gravier) |>  # add original dataset back in
-  ggplot(aes(.fittedPC1, .fittedPC2, color = early_metastasis)) + 
-  geom_point(size = 1.5) 
+  ggplot(aes(.fittedPC1, .fittedPC2, color = as.factor(early_metastasis))) + 
+  geom_point(size = 1.5) +
+  scale_color_manual(values = c("1" = "#D55E00", "0" = "#0072B2"))+
+  labs(color = "Early Metastasis")
 
 ```
 
