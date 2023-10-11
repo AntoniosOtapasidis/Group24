@@ -149,7 +149,7 @@ gravier_clean_aug_long_nested
 Fit the model (Many model approach)
 
 ```{r}
-pca_model <- gravier_clean_aug_long |> 
+pca_model <- gravier_clean_aug_long_nested |> 
   group_by(gene) |> 
   mutate(pca_object = map(.x = data,
                    .f = ~prcomp(select(.x, where(is.numeric))), scale = TRUE)) |> 
@@ -168,37 +168,8 @@ pca_model
 gravier_model$pca_object[[2]]
 ```
 
-Create the PCA model with the Many models approach
-
 ```{r}
 pca_model<-pca_model |> 
-  unnest(augmented-data)
-gravier_model
-```
-
-```{r}
-gravier_model
-```
-
-```{r}
-
-gravier_model |> 
-  group_by(PC) |> 
-  summarise(n = n())
-```
-
-```{r }
-# It is just to confirm that the model works as it supposed to be
-
-#gravier_model|>
- # filter(gene == "g10A01") |> 
-  #pull(pca_object)
-```
-
-```{r}
-gravier_estim <- unnest(gravier_model, augmented_data)
-```
-
-```{r}
-gravier_estim
+  unnest(augmented_data)
+pca_model
 ```
