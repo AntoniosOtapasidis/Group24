@@ -19,6 +19,7 @@ library(ggplot2)
 library(broom)
 library(ggrepel)
 library(purrr)
+
 ```
 
 Load data
@@ -40,6 +41,7 @@ load(file = str_c(raw_dir, data_file))
 ```
 
 Data Wrangeling
+
 ```{r}
 gravier <- gravier |>
   bind_cols() |>
@@ -50,7 +52,13 @@ gravier <- gravier |>
 
 ```
 
+```{r}
+gravier
+
+```
+
 Plot average expressions
+
 ```{r}
 gravier |>
   select(-early_metastasis) |>
@@ -69,4 +77,128 @@ gravier |>
   ) +
   theme_minimal()+
   theme(axis.text.x = element_blank())
+```
+
+## PCA analysis (S232996)
+
+```{r}
+pca_fit <- gravier |> 
+  select(where(is.numeric)) |>  # retain only numeric columns
+  prcomp(scale = TRUE) # do PCA on scaled data
+```
+
+```{r}
+pca_fit |> 
+  augment(gravier) |>  # add original dataset back in
+  ggplot(aes(.fittedPC1, .fittedPC2, color = early_metastasis)) + 
+  geom_point(size = 1.5) 
+
+```
+
+```{r}
+pca_fit |> 
+  tidy(matrix = "rotation")
+```
+
+```{r}
+pca_fit |> 
+  tidy(matrix = "eigenvalues")
+
+```
+
+![]()
+
+```{r}
+pca_fit |> 
+  tidy(matrix = "eigenvalues") |> 
+  ggplot(aes(PC, percent)) +
+  geom_col(fill = "#56B4E9", alpha = 0.8) +
+  scale_x_continuous(breaks = 1:9) +
+  scale_y_continuous(
+    labels = scales::percent_format(),
+    expand = expansion(mult = c(0, 0.01))
+  ) 
+```
+
+Here I just applied the code from the pca file we got
+
+Next I tried to apply the many models approach just for fun
+
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+```{r}
+gravier_clean_aug_long<-gravier |> 
+  pivot_longer(cols = starts_with('g'),
+               names_to = 'gene',
+               values_drop_na = TRUE,
+               values_to='log2_exp_level')
+
+gravier_clean_aug_long
+```
+
+```{r}
+#nes tht e data
+gravier_clean_aug_long_nested<- gravier_clean_aug_long |> 
+  group_by(gene) |> 
+  nest() |> 
+  ungroup()
+
+gravier_clean_aug_long_nested
+```
+
+Fit the model (Many model approach)
+
+```{r}
+pca_model <- gravier_clean_aug_long |> 
+  group_by(gene) |> 
+  mutate(pca_object = map(.x = data,
+                   .f = ~prcomp(select(.x, where(is.numeric))), scale = TRUE)) |> 
+    mutate(
+    pca_object_tidy = map(.x = pca_object,
+      .f = ~tidy(.x, conf.int = TRUE, conf.level = 0.95)),
+    augmented_data = map(.x = pca_object,
+      .f = ~augment(.x))
+  ) |> 
+  ungroup()
+
+pca_model
+```
+
+```{r evl = FALSE}
+gravier_model$pca_object[[2]]
+```
+
+Create the PCA model with the Many models approach
+
+```{r}
+pca_model<-pca_model |> 
+  unnest(augmented-data)
+gravier_model
+```
+
+```{r}
+gravier_model
+```
+
+```{r}
+
+gravier_model |> 
+  group_by(PC) |> 
+  summarise(n = n())
+```
+
+```{r }
+# It is just to confirm that the model works as it supposed to be
+
+#gravier_model|>
+ # filter(gene == "g10A01") |> 
+  #pull(pca_object)
+```
+
+```{r}
+gravier_estim <- unnest(gravier_model, augmented_data)
+```
+
+```{r}
+gravier_estim
 ```
