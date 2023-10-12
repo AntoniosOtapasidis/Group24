@@ -175,5 +175,3 @@ pca_model<-pca_model |>
   unnest(augmented_data)
 pca_model
 ```
-
-TEST123
