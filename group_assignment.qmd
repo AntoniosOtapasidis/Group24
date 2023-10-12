@@ -21,7 +21,7 @@ library(ggrepel)
 library(purrr)
 ```
 
-Load the data
+Load the data good
 
 ```{r}
 raw_dir <- "data/_raw/"
