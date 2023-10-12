@@ -9,7 +9,9 @@ editor: visual
 
 # PCA tidyverse style
 
-Load the libraries
+This micro-report consists of two parts: first, the PCA analysis described by Claus O. Wilke and second, our try with the gravier data.
+
+### Load the libraries
 
 ```{r setup, include=TRUE, message=FALSE, warning=FALSE}
 # Load the libraries
@@ -21,7 +23,89 @@ library(ggrepel)
 library(purrr)
 ```
 
-Load the data good
+## Part I
+
+### Load the data
+
+```{r}
+biopsy <- read_csv("https://wilkelab.org/classes/SDS348/data_sets/biopsy.csv")
+```
+
+### The data in PC coordinates
+
+```{r}
+pca_fit_fixed <- biopsy |> 
+  select(where(is.numeric)) |> # retain only columns with numeric values
+  prcomp(scale = TRUE) # perform PCA on scaled data
+```
+
+```{r}
+pca_fit_fixed |>
+  augment(biopsy) |> # add original dataset back in
+  ggplot(aes(.fittedPC1, .fittedPC2, color = outcome)) + 
+  geom_point(size = 1.5) +
+  scale_color_manual(
+    values = c(malignant = "#D55E00", benign = "#0072B2")
+  ) 
+```
+
+### The rotation matrix
+
+```{r}
+# extract the rotation matrix
+pca_fit_fixed |>
+  tidy(matrix = "rotation")
+```
+
+```{r}
+# for the plot
+arrow_style <- arrow(
+  angle = 20, ends = "first", type = "closed", length = grid::unit(8, "pt")
+)
+
+# plot rotation matrix
+pca_fit_fixed |>
+  tidy(matrix = "rotation") |>
+  pivot_wider(names_from = "PC", 
+              names_prefix = "PC",
+              values_from = "value") |>
+  ggplot(aes(PC1, PC2)) +
+  geom_segment(xend = 0, 
+               yend = 0,
+               arrow = arrow_style) +
+  geom_text(aes(label = column),
+    hjust = 1, nudge_x = -0.02, 
+    color = "#904C2F"
+  ) +
+  xlim(-1.25, .5) +
+  ylim(-.5, 1) +
+  coord_fixed() 
+```
+
+### Variance explained by each PC
+
+```{r}
+pca_fit_fixed |>
+  tidy(matrix = "eigenvalues")
+```
+
+```{r}
+# for the plot
+pca_fit_fixed |>
+  tidy(matrix = "eigenvalues") |>
+  ggplot(aes(PC, percent)) +
+  geom_col(fill = "#56B4E9", 
+           alpha = 0.8) +
+  scale_x_continuous(breaks = 1:9) +
+  scale_y_continuous(
+    labels = scales::percent_format(),
+    expand = expansion(mult = c(0, 0.01))
+  ) 
+```
+
+## Part II
+
+### Load the data
 
 ```{r}
 raw_dir <- "data/_raw/"
@@ -39,45 +123,20 @@ if( !file.exists(str_c(raw_dir, data_file)) ){
 load(file = str_c(raw_dir, data_file))
 ```
 
-Data Wrangling
-
 ```{r}
 gravier <- gravier |>
   bind_cols() |>
-  as_tibble() |> 
-  mutate(y = case_when(y == "poor" ~ 1,
-                       y == "good" ~ 0)) |> 
-  relocate(early_metastasis = y)
-
+  as_tibble() |>
+  relocate(early_metastasis = y)|>
+  mutate(early_metastasis = case_when(early_metastasis == "poor" ~ 1,
+                                      early_metastasis == "good" ~ 0))
 ```
 
-Plot average expressions
-
-```{r}
-gravier |>
-  select(-early_metastasis) |>
-  summarise(across(everything(), mean, na.rm = TRUE)) |>
-  pivot_longer(cols = everything(),
-               names_to = "gene",
-               values_to = "average_expression") |> 
-  arrange(-average_expression) |>
-  ggplot(aes(x = reorder(gene, average_expression), 
-             y = average_expression)) + 
-  geom_col() +
-  labs(
-    title = "Distribution of Average log2 Expression of Genes",
-    x = "Genes",
-    y = "Average log2 Expression"
-  ) +
-  theme_minimal()+
-  theme(axis.text.x = element_blank())
-```
-
-## PCA analysis (S232996)
+## PCA analysis
 
 ```{r}
 pca_fit <- gravier |> 
-  select(-early_metastasis) |>  # retain only columns with numeric values - early_metastasis is an encoded factor
+  select(where(is.numeric)) |>  # retain only columns with numeric values 
   prcomp(scale = TRUE) # do PCA on scaled data
 ```
 
@@ -116,9 +175,7 @@ pca_fit |>
   ) 
 ```
 
-Here I just applied the code from the pca file we got
-
-Next I tried to apply the many models approach just for fun
+#### Next we tried to apply the many models approach
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
@@ -133,7 +190,6 @@ gravier_clean_aug_long
 ```
 
 ```{r}
-#nes tht e data
 gravier_clean_aug_long_nested<- gravier_clean_aug_long |> 
   group_by(gene) |> 
   nest() |> 
@@ -142,7 +198,7 @@ gravier_clean_aug_long_nested<- gravier_clean_aug_long |>
 gravier_clean_aug_long_nested
 ```
 
-Fit the model (Many model approach)
+Fit the model (Many models approach)
 
 ```{r}
 pca_model <- gravier_clean_aug_long_nested |> 
