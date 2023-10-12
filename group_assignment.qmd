@@ -19,7 +19,6 @@ library(ggplot2)
 library(broom)
 library(ggrepel)
 library(purrr)
-
 ```
 
 Load the data
