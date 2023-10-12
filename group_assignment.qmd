@@ -78,7 +78,7 @@ gravier |>
 
 ```{r}
 pca_fit <- gravier |> 
-  select(where(is.numeric)) |>  # retain only columns with numeric values
+  select(-early_metastasis) |>  # retain only columns with numeric values - early_metastasis is an encoded factor
   prcomp(scale = TRUE) # do PCA on scaled data
 ```
 
