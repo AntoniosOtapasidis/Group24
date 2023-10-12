@@ -9,7 +9,7 @@ editor: visual
 
 # PCA tidyverse style
 
-Load libraries
+Load the libraries
 
 ```{r setup, include=TRUE, message=FALSE, warning=FALSE}
 # Load the libraries
@@ -22,7 +22,7 @@ library(purrr)
 
 ```
 
-Load data
+Load the data
 
 ```{r}
 raw_dir <- "data/_raw/"
@@ -40,7 +40,7 @@ if( !file.exists(str_c(raw_dir, data_file)) ){
 load(file = str_c(raw_dir, data_file))
 ```
 
-Data Wrangeling
+Data Wrangling
 
 ```{r}
 gravier <- gravier |>
@@ -49,11 +49,6 @@ gravier <- gravier |>
   mutate(y = case_when(y == "poor" ~ 1,
                        y == "good" ~ 0)) |> 
   relocate(early_metastasis = y)
-
-```
-
-```{r}
-gravier
 
 ```
 
