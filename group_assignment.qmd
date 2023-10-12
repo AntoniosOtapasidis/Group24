@@ -78,18 +78,18 @@ gravier |>
 
 ```{r}
 pca_fit <- gravier |> 
-  select(where(is.numeric)) |>  # retain only numeric columns
+  select(where(is.numeric)) |>  # retain only columns with numeric values
   prcomp(scale = TRUE) # do PCA on scaled data
 ```
 
 ```{r}
 pca_fit |> 
-  augment(gravier) |>  # add original dataset back in
+  augment(gravier) |>  # add the original dataset back in
   ggplot(aes(.fittedPC1, .fittedPC2, color = as.factor(early_metastasis))) + 
   geom_point(size = 1.5) +
   scale_color_manual(values = c("1" = "#D55E00", "0" = "#0072B2"))+
-  labs(color = "Early Metastasis")
-
+  labs(color = "Early Metastasis")+
+  theme_classic()
 ```
 
 ```{r}
